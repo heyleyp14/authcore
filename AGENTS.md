@@ -15,6 +15,26 @@ el servicio de dominio (`../domain`) con la misma clave compartida.
 - Spring Security stateless · BCrypt · JJWT 0.12.6
 - Puerto 8081 · arquitectura hexagonal
 
+## Demo completa (con `domain`)
+
+La demo integrada (AuthCore + API de dominio + frontend) se levanta desde el repo hermano `domain`,
+no desde el compose de este repo. Los dos deben quedar en la misma carpeta: `pi/domain` y
+`pi/authcore`. El overlay de desarrollo de `domain` monta `../authcore`.
+
+```bash
+cd domain
+./scripts/generar-env.sh
+docker compose -f docker-compose.yml -f docker-compose.dev.yml build
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+./scripts/seed.sh      # datos del dominio con las fechas de hoy
+# http://localhost:8080  → admin / admin123
+```
+
+- `DataSeedRunner` siembra aquí los 10 usuarios solo si `users` está vacía; el seed de `domain` no
+  toca usuarios.
+- Guía paso a paso: `../domain/docs-tecnicos/puesta-en-marcha-demo.md`
+  (<https://github.com/heyleyp14/domain/blob/main/docs-tecnicos/puesta-en-marcha-demo.md>).
+
 ## Comandos
 
 ```bash
@@ -28,7 +48,8 @@ bash gradlew bootRun        # arranca en :8081
 - El wrapper está sin bit de ejecución en el repo: usa `bash gradlew` o `chmod +x gradlew` una vez.
 - No hay Gradle instalado en el sistema; usa siempre el wrapper.
 - `test` usa `@SpringBootTest`, así que necesita una base MySQL accesible en la URL configurada.
-- Docker: `docker compose up -d --build` levanta MySQL 8.4 y el servicio.
+- Docker: `docker compose up -d --build` levanta MySQL 8.4 y este servicio aislados. La demo
+  integrada usa el compose de `domain` (ver "Demo completa").
 
 ## Variables de entorno
 
@@ -99,4 +120,6 @@ Reglas:
 ## Documentación
 
 - `README.md` — arranque, configuración, API, token, pruebas y estructura.
+- `../domain/docs-tecnicos/puesta-en-marcha-demo.md` — guía única para levantar los dos repos, sembrar
+  la demo y ver lo mismo que en la presentación.
 - `../domain/docs-tecnicos/api/authcore-openapi.yaml` — contrato OpenAPI de este servicio.

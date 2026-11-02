@@ -37,6 +37,24 @@ El wrapper está sin bit de ejecución en el repositorio. Usa `bash gradlew`, o 
 La base `authcore_db` debe existir antes de arrancar. Con el `docker compose` de este repo se crea
 automáticamente; la URL por defecto apunta a `jdbc:mysql://localhost:3306/authcore_db`.
 
+## Demo completa (con `domain`)
+
+El sistema completo (AuthCore + API de dominio + frontend) se levanta desde el repo hermano `domain`.
+Los dos repositorios deben quedar en la misma carpeta: `pi/domain` y `pi/authcore`.
+
+```bash
+cd ../domain   # desde la raíz de authcore/
+./scripts/generar-env.sh
+docker compose -f docker-compose.yml -f docker-compose.dev.yml build
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+./scripts/seed.sh
+# http://localhost:8080 → admin / admin123
+```
+
+El `docker compose up -d --build` de **este** repo sirve solo para trabajar en AuthCore aislado
+(MySQL y servicio en 8081). La guía paso a paso, con los datos de demo y los problemas comunes, está
+en `../domain/docs-tecnicos/puesta-en-marcha-demo.md`.
+
 ## Configuración
 
 Variables de entorno (los valores por defecto están en `src/main/resources/application.yml`):
