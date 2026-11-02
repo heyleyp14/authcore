@@ -4,12 +4,16 @@ import com.pamplona.authcore.application.ports.in.AssignRoleUseCase;
 import com.pamplona.authcore.application.ports.in.ListUsersUseCase;
 import com.pamplona.authcore.application.ports.in.LoginUseCase;
 import com.pamplona.authcore.application.ports.in.RegisterUserUseCase;
+import com.pamplona.authcore.application.ports.out.Pagina;
+import com.pamplona.authcore.application.ports.out.Paginacion;
+import com.pamplona.authcore.domain.User;
 import com.pamplona.authcore.infrastructure.adapters.in.rest.dto.AssignRoleRequest;
 import com.pamplona.authcore.infrastructure.adapters.in.rest.dto.LoginRequest;
 import com.pamplona.authcore.infrastructure.adapters.in.rest.dto.LoginResponse;
 import com.pamplona.authcore.infrastructure.adapters.in.rest.dto.RegisterRequest;
 import com.pamplona.authcore.infrastructure.adapters.in.rest.dto.RegisterResponse;
 import com.pamplona.authcore.infrastructure.adapters.in.rest.dto.UserResponse;
+import com.pamplona.authcore.infrastructure.adapters.in.rest.dto.UsuariosR;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -49,8 +54,9 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request) {
-        Long id = registerUserUseCase.register(request.username(), request.password());
-        return ResponseEntity.status(HttpStatus.CREATED).body(new RegisterResponse(id, request.username()));
+        User created = registerUserUseCase.register(request.username(), request.password(), request.imageUrl());
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new RegisterResponse(created.getId(), created.getUsername(), created.getImageUrl()));
     }
 
     @PostMapping("/login")
@@ -68,8 +74,10 @@ public class AuthController {
 
     @GetMapping("/users")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<UserResponse>> listUsers() {
-        List<UserResponse> users = listUsersUseCase.listUsers().stream().map(UserResponse::from).toList();
-        return ResponseEntity.ok(users);
+    public UsuariosR listUsers(@RequestParam(defaultValue = "1") int pagina,
+                               @RequestParam(defaultValue = "20") int tamano) {
+        Pagina<User> p = listUsersUseCase.listUsers(Paginacion.de(pagina, tamano));
+        return new UsuariosR(p.total(), p.pagina(), p.tamano(), p.totalPaginas(),
+                p.contenido().stream().map(UserResponse::from).toList());
     }
 }

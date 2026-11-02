@@ -13,4 +13,6 @@ public interface UserRepositoryPort {
     Optional<User> findByUsername(String username);
     Optional<User> findById(Long id);
     List<User> findAll();
+
+    Pagina<User> findAll(Paginacion paginacion);
 }

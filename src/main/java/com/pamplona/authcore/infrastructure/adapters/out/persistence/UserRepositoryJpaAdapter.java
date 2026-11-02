@@ -1,7 +1,11 @@
 package com.pamplona.authcore.infrastructure.adapters.out.persistence;
 
+import com.pamplona.authcore.application.ports.out.Pagina;
+import com.pamplona.authcore.application.ports.out.Paginacion;
 import com.pamplona.authcore.application.ports.out.UserRepositoryPort;
 import com.pamplona.authcore.domain.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
@@ -24,7 +28,8 @@ public class UserRepositoryJpaAdapter implements UserRepositoryPort {
     @Override
     public User save(User user) {
         UserJpaEntity entity = new UserJpaEntity(
-                user.getId(), user.getUsername(), user.getPasswordHash(), new HashSet<>(user.getRoles()));
+                user.getId(), user.getUsername(), user.getPasswordHash(), new HashSet<>(user.getRoles()),
+                user.getImageUrl());
         UserJpaEntity saved = jpaRepository.save(entity);
         return toDomain(saved);
     }
@@ -44,7 +49,16 @@ public class UserRepositoryJpaAdapter implements UserRepositoryPort {
         return jpaRepository.findAll().stream().map(this::toDomain).toList();
     }
 
+    @Override
+    public Pagina<User> findAll(Paginacion paginacion) {
+        Page<UserJpaEntity> page = jpaRepository.findAll(
+                PageRequest.of(paginacion.pagina() - 1, paginacion.tamano()));
+        return new Pagina<>(page.getContent().stream().map(this::toDomain).toList(), page.getTotalElements(),
+                paginacion.pagina(), paginacion.tamano());
+    }
+
     private User toDomain(UserJpaEntity entity) {
-        return new User(entity.getId(), entity.getUsername(), entity.getPasswordHash(), new HashSet<>(entity.getRoles()));
+        return new User(entity.getId(), entity.getUsername(), entity.getPasswordHash(),
+                new HashSet<>(entity.getRoles()), entity.getImageUrl());
     }
 }

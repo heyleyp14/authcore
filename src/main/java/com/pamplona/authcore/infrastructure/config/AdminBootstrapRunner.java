@@ -37,7 +37,7 @@ public class AdminBootstrapRunner implements CommandLineRunner {
         if (userRepository.findByUsername(DEFAULT_ADMIN_USERNAME).isEmpty()) {
             Set<Role> roles = new HashSet<>(Set.of(Role.ADMIN, Role.USER));
             User admin = new User(null, DEFAULT_ADMIN_USERNAME,
-                    passwordHasher.hash(DEFAULT_ADMIN_PASSWORD), roles);
+                    passwordHasher.hash(DEFAULT_ADMIN_PASSWORD), roles, null);
             userRepository.save(admin);
             log.warn("=================================================================");
             log.warn(" Usuario admin creado automaticamente:");

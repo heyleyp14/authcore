@@ -34,6 +34,9 @@ public class UserJpaEntity {
     @Column(nullable = false)
     private String passwordHash;
 
+    @Column(name = "image_url", length = 512)
+    private String imageUrl;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
@@ -44,11 +47,12 @@ public class UserJpaEntity {
         // requerido por JPA
     }
 
-    public UserJpaEntity(Long id, String username, String passwordHash, Set<Role> roles) {
+    public UserJpaEntity(Long id, String username, String passwordHash, Set<Role> roles, String imageUrl) {
         this.id = id;
         this.username = username;
         this.passwordHash = passwordHash;
         this.roles = roles;
+        this.imageUrl = imageUrl;
     }
 
     public Long getId() {
@@ -81,5 +85,13 @@ public class UserJpaEntity {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

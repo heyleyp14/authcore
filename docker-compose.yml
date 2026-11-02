@@ -22,6 +22,9 @@ services:
       SPRING_DATASOURCE_USERNAME: authcore
       SPRING_DATASOURCE_PASSWORD: authcore
       JWT_SECRET: cambia-este-secreto-por-uno-largo-y-aleatorio-de-al-menos-32-bytes-en-produccion
+      CLOUDINARY_URL: ${CLOUDINARY_URL:-}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-}
+      CLOUDINARY_UPLOAD_PRESET: ${CLOUDINARY_UPLOAD_PRESET:-}
     ports:
       - "8081:8081"
 

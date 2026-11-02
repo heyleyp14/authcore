@@ -5,8 +5,8 @@ import com.pamplona.authcore.domain.User;
 
 import java.util.Set;
 
-public record UserResponse(Long id, String username, Set<Role> roles) {
+public record UserResponse(Long id, String username, Set<Role> roles, String imageUrl) {
     public static UserResponse from(User user) {
-        return new UserResponse(user.getId(), user.getUsername(), user.getRoles());
+        return new UserResponse(user.getId(), user.getUsername(), user.getRoles(), user.getImageUrl());
     }
 }

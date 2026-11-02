@@ -1,6 +1,8 @@
 package com.pamplona.authcore.infrastructure.adapters.in.rest;
 
 import com.pamplona.authcore.application.exception.InvalidCredentialsException;
+import com.pamplona.authcore.application.exception.InvalidImageException;
+import com.pamplona.authcore.application.exception.StorageUnavailableException;
 import com.pamplona.authcore.application.exception.UserAlreadyExistsException;
 import com.pamplona.authcore.application.exception.UserNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -29,6 +31,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", ex.getMessage()));
     }
 
+    @ExceptionHandler(StorageUnavailableException.class)
+    public ResponseEntity<Map<String, String>> handleStorageUnavailable(StorageUnavailableException ex) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidImageException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidImage(InvalidImageException ex) {
+        return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidation(MethodArgumentNotValidException ex) {
         String message = ex.getBindingResult().getFieldErrors().stream()
@@ -36,5 +48,10 @@ public class GlobalExceptionHandler {
                 .findFirst()
                 .orElse("Datos invalidos");
         return ResponseEntity.badRequest().body(Map.of("error", message));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, String>> handleBadArgument(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
     }
 }

@@ -4,6 +4,10 @@ server:
 spring:
   application:
     name: authcore-service
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 3MB
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/authcore_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true}
     username: ${SPRING_DATASOURCE_USERNAME:root}
@@ -21,3 +25,9 @@ authcore:
   jwt:
     secret: ${JWT_SECRET:cambia-este-secreto-por-uno-largo-y-aleatorio-de-al-menos-32-bytes}
     expiration-ms: 3600000
+  seed:
+    enabled: ${AUTHCORE_SEED_ENABLED:true}
+  cloudinary:
+    url: ${CLOUDINARY_URL:}
+    cloud-name: ${CLOUDINARY_CLOUD_NAME:}
+    upload-preset: ${CLOUDINARY_UPLOAD_PRESET:}
