@@ -31,6 +31,10 @@ public class DataSeedRunner implements CommandLineRunner {
     private static final String CLOUDINARY_BASE =
             "https://res.cloudinary.com/ferreteria-murano3d/image/upload/v1/users/";
 
+    /** Retrato real del admin (subido a la cuenta de Cloudinary del proyecto); los slugs no existen como archivos. */
+    private static final String ADMIN_IMAGE_URL =
+            "https://res.cloudinary.com/rln6jzqz/image/upload/v1793580170/kg7bkkni46siyo835blb.jpg";
+
     private static final List<SeedUser> DEMO_USERS = List.of(
             new SeedUser("admin", "admin123", Set.of(Role.ADMIN, Role.USER), "admin"),
             new SeedUser("maria.gomez", "Demo1234", Set.of(Role.USER), "maria-gomez"),
@@ -60,8 +64,11 @@ public class DataSeedRunner implements CommandLineRunner {
         }
 
         for (SeedUser seed : DEMO_USERS) {
+            String imageUrl = "admin".equals(seed.username())
+                    ? ADMIN_IMAGE_URL
+                    : CLOUDINARY_BASE + seed.imageSlug() + ".png";
             User user = new User(null, seed.username(), passwordHasher.hash(seed.password()),
-                    new HashSet<>(seed.roles()), CLOUDINARY_BASE + seed.imageSlug() + ".png");
+                    new HashSet<>(seed.roles()), imageUrl);
             userRepository.save(user);
         }
 
